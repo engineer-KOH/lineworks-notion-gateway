@@ -13,8 +13,6 @@
 - **OAuth 2.0 / JWT 認証の実装**: LINE WORKS Server API v2.0に準拠したRS256（非対称暗号鍵）署名による<br>
                                  アクセストークン自動発行の実現
 
-=======
-
 - **インタラクティブな応答機能**: Webhookイベントの受信から非同期でのメッセージ返送までを自動パイプライン化
 
 ## 🛠️ 使用技術（Tech Stack）
@@ -25,7 +23,6 @@
 - **連携ターゲット**: Notion (ポートフォリオ)
 
 ## ⚙️ システム構成・処理フロー（Workflow）
-<<<<<<< HEAD
 1. **Webhook受信**: ユーザーがLINE WORKSのBot（1:1トーク）へメッセージを送信すると、FastAPIの <br>
                     `/webhook` エンドポイントへイベントデータが到達
 
@@ -37,7 +34,6 @@
 
 4. **応答メッセージ送信**: 認証成功時にはNotionポートフォリオURL、失敗時には権限エラーメッセージを<br>
                           LINE WORKS API経由でユーザーへ自動返信
-=======
 
 ## 🚀 使い方（Quick Start）
 
@@ -59,9 +55,7 @@
    LINEWORKS_BOT_ID=your_bot_id
    ```
 4. **秘密鍵（Private Key）の配置**:
-<<<<<<< HEAD
    LINE WORKS Developer Consoleからダウンロードした秘密鍵ファイルをルートフォルダに配置します。
-=======
 
 ### 👤 2. ツールの起動と実行フロー
 1. **FastAPI サーバーの起動**:
@@ -73,13 +67,11 @@
    ngrok http 8000
    ```
 3. **Callback URLの設定**:
-<<<<<<< HEAD
    発行されたngrokのHTTPS URL（例: `https://xxxx.ngrok-free.dev/webhook`）を、<br>
    LINE WORKS Developer ConsoleのBot Callback URLに設定します。
 4. **LINE WORKSでの実行**:
    LINE WORKSで「ポートフォリオ閲覧ゲート」Botにメッセージを送信すると、<br>
    認証結果に応じてポートフォリオURLが返信されます。
-=======
 
 ```text
 lineworks-notion-gateway/

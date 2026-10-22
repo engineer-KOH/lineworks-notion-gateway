@@ -55,7 +55,7 @@
    LINEWORKS_BOT_ID=your_bot_id
    ```
 4. **秘密鍵（Private Key）の配置**:<br>
-   LINE WORKS Developer Consoleからダウンロードした秘密鍵ファイルを<br>ルートフォルダに配置します。
+   LINE WORKS Developer Consoleからダウンロードした秘密鍵ファイルをルートフォルダに配置します。
 
 ### 👤 2. ツールの起動と実行フロー
 1. **FastAPI サーバーの起動**:
@@ -67,11 +67,9 @@
    ngrok http 8000
    ```
 3. **Callback URLの設定**:<br>
-   発行されたngrokのHTTPS URL（例: `https://xxxx.ngrok-free.dev/webhook`）を、<br>
-   LINE WORKS Developer ConsoleのBot Callback URLに設定します。
+   発行されたngrokのHTTPS URL（例: `https://xxxx.ngrok-free.dev/webhook`）を、LINE WORKS Developer ConsoleのBot Callback URLに設定します。
 4. **LINE WORKSでの実行**:<br>
-   LINE WORKSで「ポートフォリオ閲覧ゲート」Botにメッセージを送信すると、<br>
-   認証結果に応じてポートフォリオURLが返信されます。
+   LINE WORKSで「ポートフォリオ閲覧ゲート」Botにメッセージを送信すると、認証結果に応じてポートフォリオURLが返信されます。
 
 ```text
 lineworks-notion-gateway/

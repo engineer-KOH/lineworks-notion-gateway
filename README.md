@@ -1,17 +1,16 @@
 # 🚀 lineworks-notion-gateway
 
 ## 📌 概要（Overview）
-<<<<<<< HEAD
- 本システムは、LINE WORKS Botをセキュアな認証ゲートウェイとして機能させ、特定権限を持つユーザーからのメッセージ入力に対して
+ 本システムは、LINE WORKS Botをセキュアな認証ゲートウェイとして機能させ、<br>特定権限を持つユーザーからのメッセージ入力に対して
  プライベートなNotionポートフォリオURLを安全に案内するWebアプリケーションです。  
- ユーザーIDによるアクセス制限と、LINE WORKS Server API v2.0に基づくJWT（RS256）認証を組み合わせることで、
+ ユーザーIDによるアクセス制限と、LINE WORKS Server API v2.0に基づくJWT（RS256）認証を組み合わせることで、<br>
  許可された関係者のみにポートフォリオへのアクセス権限を付与します。
 
 ## 🎯 主な目的（Objective）
-- **セキュアなアクセス制御**: LINE WORKSのユーザーID判定により、認証された特定の関係者のみに
+- **セキュアなアクセス制御**: LINE WORKSのユーザーID判定により、認証された特定の関係者のみに<br>
                             限定コンテンツ（Notion）を開放
 
-- **OAuth 2.0 / JWT 認証の実装**: LINE WORKS Server API v2.0に準拠したRS256（非対称暗号鍵）署名による
+- **OAuth 2.0 / JWT 認証の実装**: LINE WORKS Server API v2.0に準拠したRS256（非対称暗号鍵）署名による<br>
                                  アクセストークン自動発行の実現
 
 =======
@@ -27,16 +26,16 @@
 
 ## ⚙️ システム構成・処理フロー（Workflow）
 <<<<<<< HEAD
-1. **Webhook受信**: ユーザーがLINE WORKSのBot（1:1トーク）へメッセージを送信すると、FastAPIの 
+1. **Webhook受信**: ユーザーがLINE WORKSのBot（1:1トーク）へメッセージを送信すると、FastAPIの <br>
                     `/webhook` エンドポイントへイベントデータが到達
 
-2. **ユーザー検証**: リクエストに含まれる `userId` を検証し、許可リスト（`ALLOWED_USER_IDS`）
+2. **ユーザー検証**: リクエストに含まれる `userId` を検証し、許可リスト（`ALLOWED_USER_IDS`）<br>
                     に登録されているか判定
 
-3. **JWT生成 & トークン取得**: ローカルの秘密鍵（`.key`）を用いて `RS256` 形式で署名したJWTを生成し、
+3. **JWT生成 & トークン取得**: ローカルの秘密鍵（`.key`）を用いて `RS256` 形式で署名したJWTを生成し、<br>
                               LINE WORKS認証サーバーよりアクセストークンを取得
 
-4. **応答メッセージ送信**: 認証成功時にはNotionポートフォリオURL、失敗時には権限エラーメッセージを
+4. **応答メッセージ送信**: 認証成功時にはNotionポートフォリオURL、失敗時には権限エラーメッセージを<br>
                           LINE WORKS API経由でユーザーへ自動返信
 =======
 
@@ -75,10 +74,10 @@
    ```
 3. **Callback URLの設定**:
 <<<<<<< HEAD
-   発行されたngrokのHTTPS URL（例: `https://xxxx.ngrok-free.dev/webhook`）を、
+   発行されたngrokのHTTPS URL（例: `https://xxxx.ngrok-free.dev/webhook`）を、<br>
    LINE WORKS Developer ConsoleのBot Callback URLに設定します。
 4. **LINE WORKSでの実行**:
-   LINE WORKSで「ポートフォリオ閲覧ゲート」Botにメッセージを送信すると、
+   LINE WORKSで「ポートフォリオ閲覧ゲート」Botにメッセージを送信すると、<br>
    認証結果に応じてポートフォリオURLが返信されます。
 =======
 
@@ -87,6 +86,6 @@ lineworks-notion-gateway/
 ├── main.py                     # Webhook受信、ユーザー判定、JWT生成、メッセージ送信のメイン処理
 ├── .env                        # LINE WORKS API等の資格情報（※.gitignore対象）
 ├── .gitignore                  # 機密情報・秘密鍵・キャッシュファイルの除外設定
-├── private_20261022112215.key  # LINE WORKS Server API認証用のRS256秘密鍵（※.gitignore対象）
+├── private_**************.key  # LINE WORKS Server API認証用のRS256秘密鍵（※.gitignore対象）
 └── README.md                   # プロジェクト仕様書・ドキュメント
 ```

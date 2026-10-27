@@ -8,23 +8,26 @@ from fastapi import FastAPI, HTTPException, Request
 import jwt
 import requests
 
-# Load environment variables
+# Load environment variables from .env
 load_dotenv()
 
 app = FastAPI()
 
+# LINE WORKS Credentials & Configurations (loaded from environment variables)
 CLIENT_ID = os.getenv("LINEWORKS_CLIENT_ID")
 CLIENT_SECRET = os.getenv("LINEWORKS_CLIENT_SECRET")
 BOT_ID = os.getenv("LINEWORKS_BOT_ID")
+SERVICE_ACCOUNT_ID = os.getenv("LINEWORKS_SERVICE_ACCOUNT_ID")
 
-# Service account ID
-SERVICE_ACCOUNT_ID = "vpvtr.serviceaccount@works-2176857"
-
-# Allowed user ID list
-ALLOWED_USER_IDS = ["274f2290-478e-4a53-1ae1-04d4998464dd"]
+# Allowed user ID list (comma-separated string in .env converted to a list)
+allowed_users_env = os.getenv("LINEWORKS_ALLOWED_USER_IDS", "")
+ALLOWED_USER_IDS = [uid.strip() for uid in allowed_users_env.split(",") if uid.strip()]
 
 # Production Notion portfolio URL
-PORTFOLIO_URL = "https://lopsided-nutmeg-6c7.notion.site/LSI-Python-3fe8a4bb9b5a80b19374ca33a2ae1e27"
+PORTFOLIO_URL = os.getenv("PORTFOLIO_URL")
+
+# Private key file name for JWT signing
+KEY_FILENAME = os.getenv("LINEWORKS_KEY_FILENAME", "private_key.key")
 
 
 @app.get("/")
@@ -35,7 +38,7 @@ def health_check():
 
 @app.post("/webhook")
 async def receive_webhook(request: Request):
-    """Receive and process webhook events from LINE WORKS."""
+    """Receive and process webhook events from LINE WORKS securely."""
     body = await request.json()
     print("Received Webhook Event:", body)
 
@@ -49,16 +52,19 @@ async def receive_webhook(request: Request):
         if not user_id:
             return {"status": "ignored"}
 
-        # 1. Check if user ID is included in the allowed list
+        # 1. Check if user ID is included in the authorized list
         if user_id in ALLOWED_USER_IDS:
-            reply_text = (
-                "認証成功しました！以下のURLからNotionポートフォリオへアクセスできます。\n"
-                f"{PORTFOLIO_URL}"
-            )
+            if PORTFOLIO_URL:
+                reply_text = (
+                    "認証成功しました！以下のURLからNotionポートフォリオへアクセスできます。\n"
+                    f"{PORTFOLIO_URL}"
+                )
+            else:
+                reply_text = "認証成功しましたが、ポートフォリオURLが設定されていません。"
         else:
             reply_text = "申し訳ありません。このBotを利用する権限がありません。"
 
-        # 2. Send reply back to LINE WORKS (call message sending API)
+        # 2. Send reply back to LINE WORKS via message API
         send_message_to_lineworks(user_id, reply_text)
 
     except Exception as e:
@@ -70,6 +76,12 @@ async def receive_webhook(request: Request):
 
 def get_line_works_token() -> str:
     """Generate JWT (RS256 signature) and retrieve an access token for LINE WORKS Server API."""
+    if not CLIENT_ID or not SERVICE_ACCOUNT_ID:
+        raise HTTPException(
+            status_code=500,
+            detail="Missing LINEWORKS_CLIENT_ID or LINEWORKS_SERVICE_ACCOUNT_ID in environment variables.",
+        )
+
     issued_at = int(time.time())
     expiration = issued_at + 3600  # Valid for 1 hour
 
@@ -81,15 +93,14 @@ def get_line_works_token() -> str:
         "exp": expiration,
     }
 
-    # Load private key file placed in the root folder
-    key_filename = "private_20261022112215.key"
-    if not os.path.exists(key_filename):
+    # Load private key file securely
+    if not os.path.exists(KEY_FILENAME):
         raise HTTPException(
             status_code=500,
-            detail=f"Private key file not found: {key_filename}",
+            detail=f"Private key file not found: {KEY_FILENAME}",
         )
 
-    with open(key_filename, "r", encoding="utf-8") as f:
+    with open(KEY_FILENAME, "r", encoding="utf-8") as f:
         private_key = f.read()
 
     # Sign with RS256 algorithm
@@ -122,6 +133,12 @@ def get_line_works_token() -> str:
 
 def send_message_to_lineworks(user_id: str, text: str):
     """Send a message to a user using the LINE WORKS Bot API."""
+    if not BOT_ID:
+        raise HTTPException(
+            status_code=500,
+            detail="Missing LINEWORKS_BOT_ID in environment variables.",
+        )
+
     access_token = get_line_works_token()
 
     # Message sending API endpoint (for 1:1 chat)

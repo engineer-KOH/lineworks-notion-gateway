@@ -17,13 +17,14 @@
 
 ## 🛠️ 使用技術（Tech Stack）
 - **言語・フレームワーク**: Python 3.14, FastAPI, Uvicorn
+- **インフラ・常時稼働**: AWS EC2 (Amazon Linux 2023), `systemd` (プロセス管理)
 - **認証・セキュリティ**: PyJWT, cryptography (RS256暗号化署名)
 - **API・通信**: LINE WORKS Bot API v2.0 (Server API), Webhook (HTTP POST), requests
-- **ネットワーク・トンネリング**: ngrok (ローカル開発環境のドメイン公開)
+- **ネットワーク・トンネリング**: ngrok (外部公開トンネル)
 - **連携ターゲット**: Notion (ポートフォリオ)
 
 ## ⚙️ システム構成・処理フロー（Workflow）
-1. **Webhook受信**: ユーザーがLINE WORKSのBot（1:1トーク）へメッセージを送信すると、FastAPIの <br>
+1. **Webhook受信**: ユーザーがLINE WORKSのBot（1:1トーク）へメッセージを送信すると、ngrok経由でAWS EC2上のFastAPIの <br>
                     `/webhook` エンドポイントへイベントデータが到達
 
 2. **ユーザー検証**: リクエストに含まれる `userId` を検証し、許可リスト（`ALLOWED_USER_IDS`）<br>
@@ -37,12 +38,9 @@
 
 ## 🚀 使い方（Quick Start）
 
-### 💻 1. 開発者・セットアップ手順
-1. **リポジトリのクローン**:
-   ```bash
-   git clone https://github.com/your-username/lineworks-notion-gateway.git
-   cd lineworks-notion-gateway
-   ```
+### 💻 1. セットアップ手順
+1. **リポジトリの配置**:
+   `/home/ec2-user/lineworks-notion/` にプロジェクトを配置します。
 2. **依存ライブラリのインストール**:
    ```bash
    pip install fastapi uvicorn requests pyjwt cryptography python-dotenv
@@ -57,19 +55,22 @@
 4. **秘密鍵（Private Key）の配置**:<br>
    LINE WORKS Developer Consoleからダウンロードした秘密鍵ファイルをルートフォルダに配置します。
 
-### 👤 2. ツールの起動と実行フロー
-1. **FastAPI サーバーの起動**:
+### 👤 2. バックグラウンド常時稼働管理 (systemd & ngrok)
+
+1. **FastAPI サービスの操作**:
+# ステータス確認
    ```bash
-   uvicorn main:app --reload
-   ```
-2. **ngrok トンネリングの起動**:
+sudo systemctl status lineworks-notion
+
+# 再起動
+sudo systemctl restart lineworks-notion
+
+# ngrok トンネリングの常時稼働（screen等を利用）
    ```bash
-   ngrok http 8000
+screen -S ngrok -d -m ./ngrok http 8000
    ```
-3. **Callback URLの設定**:<br>
-   発行されたngrokのHTTPS URL（例: `https://xxxx.ngrok-free.dev/webhook`）を、LINE WORKS Developer ConsoleのBot Callback URLに設定します。
-4. **LINE WORKSでの実行**:<br>
-   LINE WORKSで「ポートフォリオ閲覧ゲート」Botにメッセージを送信すると、認証結果に応じてポートフォリオURLが返信されます。
+### 👤 2. 3. LINE WORKSでの実行
+LINE WORKSで「ポートフォリオ閲覧ゲート」Botにメッセージを送信すると、認証結果に応じてポートフォリオURLが返信されます。
 
 ```text
 lineworks-notion-gateway/
